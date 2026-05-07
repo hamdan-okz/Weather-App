@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather App</title>
+
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+.form {
+  background: rgba(255,255,255,0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  width: 200px;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #00c6ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0072ff;
+}
+
+.weather {
+  background: rgba(255,255,255,0.15);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  display: none;
+  min-width: 250px;
+}
+
+.loading {
+  display: none;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌤 Weather App</h1>
+
+<div class="form">
+  <input type="text" id="city" placeholder="Enter city/country">
+  <button onclick="getWeather()">Get Weather</button>
+</div>
+
+<div class="loading" id="loading">Loading...</div>
+
+<div class="weather" id="weather">
+  <h2 id="location"></h2>
+  <p id="temperature"></p>
+  <p id="condition"></p>
+</div>
+
+<script>
+async function getWeather() {
+  const city = document.getElementById("city").value.trim();
+
+  if (!city) {
+    alert("Please enter a city or country name!");
+    return;
+  }
+
+  document.getElementById("weather").style.display = "none";
+  document.getElementById("loading").style.display = "block";
+
+  const apiKey = "560dc8bfa2794a7872a2c953177e7dd9";
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    document.getElementById("loading").style.display = "none";
+
+    // CHECK API ERROR PROPERLY
+    if (!response.ok) {
+      alert(data.message || "City not found!");
+      return;
+    }
+
+    // SHOW DATA
+    document.getElementById("location").textContent =
+      data.name + ", " + data.sys.country;
+
+    document.getElementById("temperature").textContent =
+      "Temperature: " + data.main.temp + " °C";
+
+    document.getElementById("condition").textContent =
+      "Condition: " + data.weather[0].description;
+
+    document.getElementById("weather").style.display = "block";
+
+  } catch (error) {
+    document.getElementById("loading").style.display = "none";
+    alert("Network error! Try again.");
+    console.error(error);
+  }
+}
+</script>
+
+</body>
+</html>
